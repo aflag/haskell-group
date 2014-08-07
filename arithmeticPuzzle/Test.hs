@@ -12,12 +12,13 @@ import ArithmeticPuzzle
 
 -- prop_cross_with_b x y = (x == B || y == B) ==> B `elem` cross x y
 
--- test_unit = [
---        testGroup "Unit" [
---            testCase "Cross AB AB" (assertEqual "" (sort [AB, B, A]) (sort $ cross AB AB))
---        ]
---    ]
+test_unit = [
+       testGroup "Test puzzle" [
+           testCase "one solution" (assertEqual "" (puzzle [1,2,3]) (["1 + 2 = 3"])),
+           testCase "two solutions (tati)" (assertEqual "simple" (puzzle [2,2,0]) (["2 - 2 = 0", "2 = 2 + 0"])),
+           testCase "four solutions (senra)" (assertEqual "simple" (puzzle [1,2,3,6]) (["1 + 2 + 3 = 6", "1 * 2 * 3 = 6", "1 = (2 * 3) / 6", "1 / 2 = 3 / 6"]))
+       ]
+   ]
 
 main :: IO ()
 main = $defaultMainGenerator
-

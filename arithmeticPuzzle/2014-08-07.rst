@@ -1,0 +1,21 @@
+Participantes:
+
+    - Tatiana @tatiana
+    - Caio @caiobrentano
+    - Alan @alanvitor
+    - Rodrigo @rodsenra
+    - Roberto @roberto
+    - Rafael @aflag
+    - Thaíssa @tfalbo
+
++++
+
+    - Número de catalão
+    - Problema legal
+    - Linguagem
+    - Desenhamos as circunferencias e os olhos da coruja
+
+---
+
+    - Ainda não resolvemos o problema (falta um tempo arbitrariamente longo)
+    - Faltou um passo: draw the fucking owl
