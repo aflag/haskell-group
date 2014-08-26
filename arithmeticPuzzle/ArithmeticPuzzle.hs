@@ -2,8 +2,14 @@
 -- Problem 93 (An arithmetic puzzle)
 module ArithmeticPuzzle where
 
-data Operator = Addition | Division | Multiplication | Subtraction
+data Operator = Addition | Division | Multiplication | Subtraction deriving Eq
 data BinaryTree a = Leaf a | Node Operator (BinaryTree a) (BinaryTree a)
+
+instance Eq a => Eq (BinaryTree a) where
+    Leaf x == Leaf y = x == y
+    Node _ _ _ == Leaf _ = False
+    Leaf _ == Node _ _ _ = False
+    Node x1 y1 z1 == Node x2 y2 z2 = x1 == x2 && y1 == y2 && z1 == z2
 
 instance Show Operator where
     show Addition = "+"
@@ -22,10 +28,14 @@ eval (Node Division x y) = eval x / eval y
 eval (Node Multiplication x y) = eval x * eval y
 eval (Node Subtraction x y) = eval x - eval y
 
-check :: [Int] -> Int -> Bool
-check l n = sum (take n l) == sum (drop n l)
+split :: [Float] -> [([Float], [Float])]
+split l 
+    | length l < 2 = error "NullPointerException"
+    | otherwise = map (flip splitAt $ l) [1..length l -1]
 
-findCut :: [Int] -> [Bool]
-findCut l = map (check l) [1..length l - 1]
+
+treeGenerator :: [Float] -> [BinaryTree Float]
+treeGenerator l = []
+
 
 puzzle _ = ["1 + 2 = 3"]
