@@ -29,13 +29,15 @@ eval (Node Multiplication x y) = eval x * eval y
 eval (Node Subtraction x y) = eval x - eval y
 
 split :: [Float] -> [([Float], [Float])]
-split l 
+split l
     | length l < 2 = error "NullPointerException"
     | otherwise = map (flip splitAt $ l) [1..length l -1]
 
-
 treeGenerator :: [Float] -> [BinaryTree Float]
-treeGenerator l = []
+treeGenerator [x] = [Leaf x]
+treeGenerator [x, y] = [Node Addition (Leaf x) (Leaf y)]
+treeGenerator (x:xs) = foldr (++) (map (appendElement x) (treeGenerator xs))
 
+appendElement 
 
 puzzle _ = ["1 + 2 = 3"]
