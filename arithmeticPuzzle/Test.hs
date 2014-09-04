@@ -24,12 +24,17 @@ test_unit = [
        testGroup "Test given a list create a tree (tati)" [
             testCase "One element" (assertEqual "" (treeGenerator [1]) [Leaf 1]),
             testCase "Two elements" (assertEqual "" (treeGenerator [1,2]) [Node Addition (Leaf 1) (Leaf 2)]),
-            testCase "Three elements" (assertEqual "" (treeGenerator [1,2,3]) [
+            testCase "Three elements" (assertEqual "" (sort $ treeGenerator [1,2,3]) (sort [
                 Node Addition (Node Addition (Leaf 1) (Leaf 2)) (Leaf 3),
                 Node Addition (Leaf 1) (Node Addition (Leaf 2) (Leaf 3))
-            ])
-       ],
-       testGroup "Test appendElements on tree (Bob)" [
+            ])),
+            testCase "Four elements" (assertEqual "" (sort $ treeGenerator [1,2,3,4]) (sort [
+                Node Addition (Node Addition (Leaf 1) (Leaf 2)) (Node Addition (Leaf 3) (Leaf 4)),
+                Node Addition (Leaf 1) (Node Addition (Leaf 2) (Node Addition (Leaf 3) (Leaf 4))),
+                Node Addition (Node Addition (Node Addition (Leaf 1) (Leaf 2)) (Leaf 3)) (Leaf 4),
+                Node Addition (Leaf 1) (Node Addition (Node Addition (Leaf 2) (Leaf 3)) (Leaf 4)),
+                Node Addition (Node Addition (Leaf 1) (Node Addition (Leaf 2) (Leaf 3))) (Leaf 4)
+            ]))
        ]
    ]
 
