@@ -36,14 +36,11 @@ split l
     | otherwise = map (flip splitAt $ l) [1..length l -1]
 
 treeGenerator :: [Float] -> [BinaryTree Float]
---treeGenerator [x, y] = [Node Addition (Leaf x) (Leaf y)]
---treeGenerator (x:xs) = foldr (++) (map (appendElement x) (treeGenerator xs))
-treeGenerator list = nub [treeGeneratorRight list, treeGeneratorLeft $ reverse list]
-    where
-        treeGeneratorRight [x] = Leaf x
-        treeGeneratorRight (x:xs) = Node Addition (Leaf x) (treeGeneratorRight xs)
-        treeGeneratorLeft [x] = Leaf x
-        treeGeneratorLeft (x:xs) = Node Addition (treeGeneratorLeft xs) (Leaf x)
-
+treeGenerator [x] = [Leaf x]
+treeGenerator list = do
+    (listA, listB) <- split list
+    treeA <- treeGenerator listA
+    treeB <- treeGenerator listB
+    return (Node op treeA treeB)
 
 puzzle _ = ["1 + 2 = 3"]
