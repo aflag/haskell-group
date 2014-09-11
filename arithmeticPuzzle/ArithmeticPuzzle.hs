@@ -5,9 +5,9 @@ module ArithmeticPuzzle where
 import Data.List
 
 data Operator = Addition | Division | Multiplication | Subtraction deriving (Eq, Ord)
-data BinaryTree a = Leaf a | Node Operator (BinaryTree a) (BinaryTree a) deriving Ord
+data BinaryTree = Leaf Float | Node Operator BinaryTree BinaryTree deriving Ord
 
-instance Eq a => Eq (BinaryTree a) where
+instance Eq BinaryTree where
     Leaf x == Leaf y = x == y
     Node _ _ _ == Leaf _ = False
     Leaf _ == Node _ _ _ = False
@@ -19,11 +19,11 @@ instance Show Operator where
     show Multiplication = "*"
     show Subtraction = "-"
 
-instance Show a => Show (BinaryTree a) where
-    show (Leaf x) = show x
+instance Show BinaryTree where
+    show (Leaf x) = show $ truncate x
     show (Node op x y) = "(" ++ show x ++ show op ++ show y ++ ")"
 
-eval :: (BinaryTree Float) -> Float
+eval :: BinaryTree -> Float
 eval (Leaf x) = x
 eval (Node Addition x y) = eval x + eval y
 eval (Node Division x y) = eval x / eval y
@@ -33,14 +33,24 @@ eval (Node Subtraction x y) = eval x - eval y
 split :: [Float] -> [([Float], [Float])]
 split l
     | length l < 2 = error "NullPointerException"
-    | otherwise = map (flip splitAt $ l) [1..length l -1]
+    | otherwise = map (flip splitAt $ l) [1..length l - 1]
 
-treeGenerator :: [Float] -> [BinaryTree Float]
+treeGenerator :: [Float] -> [BinaryTree]
 treeGenerator [x] = [Leaf x]
 treeGenerator list = do
     (listA, listB) <- split list
     treeA <- treeGenerator listA
     treeB <- treeGenerator listB
+    op <- [Addition, Subtraction]
     return (Node op treeA treeB)
 
-puzzle _ = ["1 + 2 = 3"]
+puzzle :: [Float] -> [String]
+puzzle numbers = filter (/="") solutions
+    where
+        solutions = do
+            (left, right) <- split numbers
+            treeLeft <- treeGenerator left
+            treeRight <- treeGenerator right
+            if eval treeLeft == eval treeRight
+                then return (show treeLeft ++ "=" ++ show treeRight)
+                else return ""

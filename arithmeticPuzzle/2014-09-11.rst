@@ -1,0 +1,16 @@
+Participantes:
+
+    - Tatiana @tatiana
+    - Caio @caiobrentano
+    - Roberto @roberto
+    - Rafael @aflag
+
++++
+
+    - Encontramos uma solução!!
+
+---
+
+    - Ainda não encontramos uma utilidade para o número de catalão (mas estamos perto)
+    - Testes estão quebrando :(
+    - O mac não sabe tirar uma janela de full screen

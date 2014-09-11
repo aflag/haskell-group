@@ -17,9 +17,10 @@ prop_joint_response_combinador x = (length x > 1) ==> all (x==) joint_lists
 
 test_unit = [
        testGroup "Test puzzle" [
-           testCase "one solution" (assertEqual "" (puzzle [1,2,3]) (["1 + 2 = 3"])),
-           testCase "two solutions (tati)" (assertEqual "simple" (puzzle [2,2,0]) (["2 - 2 = 0", "2 = 2 + 0"])),
-           testCase "four solutions (senra)" (assertEqual "simple" (puzzle [1,2,3,6]) (["1 + 2 + 3 = 6", "1 * 2 * 3 = 6", "1 = (2 * 3) / 6", "1 / 2 = 3 / 6"]))
+           testCase "one solution" (assertEqual "" (puzzle [1,2,3]) (["(1+2)=3"])),
+           testCase "two solution" (assertEqual "" (sort $ puzzle [6,4,2]) (sort ["6=(4+2)", "(6-4)=2"])),
+           testCase "two solutions (tati)" (assertEqual "simple" (sort $ puzzle [2,2,0]) (sort ["(2-2)=0", "2=(2+0)", "2=(2-0)"])),
+           testCase "four solutions (senra)" (assertEqual "simple" (puzzle [1,2,3,6]) (["(1+(2+3))=6", "(1*(2*3))=6", "1=(2*3)/6", "1/2=3/6"]))
        ],
        testGroup "Test given a list create a tree (tati)" [
             testCase "One element" (assertEqual "" (treeGenerator [1]) [Leaf 1]),
