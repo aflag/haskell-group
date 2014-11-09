@@ -6,7 +6,7 @@ setup:
 
 test:
 	cabal build && cabal test
-	cat dist/test/parentalTesting-0.1-main.log
+	cat dist/test/*-main.log
 
 run:
 	cabal build && cabal run
