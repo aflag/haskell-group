@@ -3,20 +3,45 @@ module Genetics where
 import Graphics.Gloss
 import Data.Array
 
-step _ _ (World chickens g) = World (map (\(x,y)->(x-1, y)) chickens) g
+type Grid = Array (Int, Int) Square
 
 data Square = Open | Closed | Goal | Start
 
-type Grid = Array (Int, Int) Square
-type Chicken = (Int, Int)
+data Movement = GoLeft | GoRight | GoUp | GoDown
+
+data Chicken = Chicken (Int, Int) [Movement] [Movement]
 
 data World = World [Chicken] Grid
+
+chicken pos dna = Chicken pos dna []
+
+nextPos grid GoLeft (x,y)
+    | inRange (bounds grid) (x-1,y) = (x-1,y)
+    | otherwise = (x,y)
+nextPos grid GoRight (x,y)
+    | inRange (bounds grid) (x+1,y) = (x+1,y)
+    | otherwise = (x,y)
+nextPos grid GoUp (x,y)
+    | inRange (bounds grid) (x,y+1) = (x,y+1)
+    | otherwise = (x,y)
+nextPos grid GoDown (x,y)
+    | inRange (bounds grid) (x,y-1) = (x,y-1)
+    | otherwise = (x,y)
+
+moveChicken :: Grid -> Chicken -> Chicken
+moveChicken grid (Chicken pos (m:ms) moved) = Chicken (nextPos grid m pos) ms (moved ++ [m])
+moveChicken _ chicken = chicken
+
+move :: World -> World
+move (World chickens grid) = World (map (moveChicken grid) chickens) grid
+
+step _ _ world = move world
 
 worldToPicture :: World -> Picture
 worldToPicture (World chickens g) = pictures (worldPictures ++ chickenPictures)
   where
     chickenPictures = map chickenToPicture chickens
-    chickenToPicture (x, y) =
+    chickenToPicture (Chicken (x, y) _ _) =
       translate ((fromIntegral x)*20) ((fromIntegral y)*20) $
       color chartreuse $
       circleSolid 5
