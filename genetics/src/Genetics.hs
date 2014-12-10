@@ -16,9 +16,9 @@ data Chicken = Chicken (Int, Int) [Movement] [Movement] deriving (Show)
 data World = World [Chicken] Grid
 
 instance Random Movement where
-    random g = randomR (minBound, maxBound) g
-    randomR (a,b) g =
-      let (r, g') = randomR (fromEnum a, fromEnum b) g in (toEnum r, g')
+  random g = randomR (minBound, maxBound) g
+  randomR (a,b) g =
+    let (r, g') = randomR (fromEnum a, fromEnum b) g in (toEnum r, g')
 
 chicken :: (Int, Int) -> [Movement] -> Chicken
 chicken pos dna = Chicken pos dna []
@@ -73,29 +73,20 @@ worldToPicture (World chickens g) = pictures (worldPictures ++ chickenPictures)
 
 window = InWindow "Genetics" (600, 600) (100, 100)
 
+xSize :: Int
+xSize = 8
+
+ySize :: Int
+ySize = 12
+
+maxX = xSize `div` 2
+minX = -xSize `div` 2
+maxY = ySize `div` 2
+minY = -ySize `div` 2
+
 world = World
-    (makeChickens 10 13 (-1,-2))
+    (makeChickens 10 20 (0,minY))
     (array
-      ((-1,-2), (1,2))
-      [
-        ((-1,-2), Open),
-        ((0,-2), Open),
-        ((1,-2), Open),
-
-        ((-1,-1), Open),
-        ((0,-1), Open),
-        ((1,-1), Open),
-
-        ((-1,0), Open),
-        ((0,0), Open),
-        ((1,0), Open),
-
-        ((-1,1), Open),
-        ((0,1), Open),
-        ((1,1), Open),
-
-        ((-1, 2), Open),
-        ((0, 2), Goal),
-        ((1, 2), Open)
-      ]
+      ((minX,minY), (maxX,maxY))
+      [if x==0 && y==maxY then ((0,maxY), Goal) else ((x, y), Open) | x <- [minX..maxX], y <- [minY..maxY]]
     )
