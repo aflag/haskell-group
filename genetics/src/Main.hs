@@ -6,7 +6,7 @@ import Data.Array
 
 
 model = World
-    [chicken (-1,-2) [GoRight, GoLeft, GoUp, GoUp, GoUp, GoUp, GoRight]]
+    (makeChickens 10 13 (-1,-2))
     (array
       ((-1,-2), (1,2))
       [

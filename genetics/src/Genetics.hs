@@ -2,18 +2,30 @@ module Genetics where
 
 import Graphics.Gloss
 import Data.Array
+import System.Random
 
 type Grid = Array (Int, Int) Square
 
 data Square = Open | Closed | Goal | Start
 
-data Movement = GoLeft | GoRight | GoUp | GoDown
+data Movement = GoLeft | GoRight | GoUp | GoDown deriving (Enum, Bounded, Show)
 
-data Chicken = Chicken (Int, Int) [Movement] [Movement]
+data Chicken = Chicken (Int, Int) [Movement] [Movement] deriving (Show)
 
 data World = World [Chicken] Grid
 
+instance Random Movement where
+    random g = randomR (minBound, maxBound) g
+    randomR (a,b) g =
+      let (r, g') = randomR (fromEnum a, fromEnum b) g in (toEnum r, g')
+
 chicken pos dna = Chicken pos dna []
+
+makeChickens :: Int -> Int -> (Int, Int) -> [Chicken]
+makeChickens 0 _ _ = []
+makeChickens numChickens sizeDna pos =
+    (chicken pos makeMovements) : makeChickens (numChickens-1) sizeDna pos
+  where makeMovements = take sizeDna (drop (numChickens * sizeDna) (randoms (mkStdGen 13)))
 
 nextPos grid GoLeft (x,y)
     | inRange (bounds grid) (x-1,y) = (x-1,y)
