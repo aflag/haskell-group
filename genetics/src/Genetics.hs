@@ -27,11 +27,14 @@ makeChickens :: Int -> Int -> (Int, Int) -> [Chicken]
 makeChickens 0 _ _ = []
 makeChickens numChickens sizeDna pos =
     (chicken pos makeMovements) : makeChickens (numChickens-1) sizeDna pos
-  where makeMovements = take sizeDna (drop (numChickens * sizeDna) (randoms (mkStdGen 13)))
+  where makeMovements = take sizeDna (drop (numChickens * sizeDna) (randoms (mkStdGen 3)))
 
 fitness :: World -> Chicken -> Float
 fitness (World _ _ goal@(x, y)) (Chicken position@(x', y') _ _) = -(sqrt $ fromIntegral radical)
   where radical = (x - x')^2 + (y - y')^2
+
+-- crossover :: Chicken -> Chicken -> [Chicken]
+-- mutation
 
 nextPos :: Grid -> Movement -> (Int, Int) -> (Int, Int)
 nextPos grid GoLeft (x,y)
@@ -88,9 +91,10 @@ minX = -xSize `div` 2
 maxY = ySize `div` 2
 minY = -ySize `div` 2
 
-world = World
-    (makeChickens 10 20 (0,minY))
-    (array
+world = World chickens grid goal
+  where
+    goal = (0, maxY)
+    chickens = makeChickens 10 20 (0,minY)
+    grid = (array
       ((minX,minY), (maxX,maxY))
-      [if x==0 && y==maxY then ((0,maxY), Goal) else ((x, y), Open) | x <- [minX..maxX], y <- [minY..maxY]]
-    )
+      [if x==0 && y==maxY then (goal, Goal) else ((x, y), Open) | x <- [minX..maxX], y <- [minY..maxY]])
