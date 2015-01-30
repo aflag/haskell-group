@@ -23,11 +23,20 @@ instance Random Movement where
 chicken :: (Int, Int) -> [Movement] -> Chicken
 chicken pos dna = Chicken pos dna []
 
-makeChickens :: Int -> Int -> (Int, Int) -> [Chicken]
-makeChickens 0 _ _ = []
-makeChickens numChickens sizeDna pos =
-    (chicken pos makeMovements) : makeChickens (numChickens-1) sizeDna pos
-  where makeMovements = take sizeDna (drop (numChickens * sizeDna) (randoms (mkStdGen 3)))
+makeMovements :: StdGen -> Int -> ([Movement], StdGen)
+makeMovements gen 0 = ([], gen)
+makeMovements gen size = (newMovement:movements, gen'')
+  where
+    (newMovement, gen') = random gen
+    (movements, gen'') = makeMovements gen' (size-1)
+
+makeChickens :: StdGen -> Int -> Int -> (Int, Int) -> ([Chicken], StdGen)
+makeChickens gen 0 _ _ = ([], gen)
+makeChickens gen numChickens sizeDna pos
+  = ((chicken pos movements) : chickens, gen'')
+  where
+    (movements, gen') = makeMovements gen sizeDna
+    (chickens, gen'') = makeChickens gen' (numChickens-1) sizeDna pos
 
 fitness :: World -> Chicken -> Float
 fitness (World _ _ goal@(x, y)) (Chicken position@(x', y') _ _) = -(sqrt $ fromIntegral radical)
@@ -94,7 +103,7 @@ minY = -ySize `div` 2
 world = World chickens grid goal
   where
     goal = (0, maxY)
-    chickens = makeChickens 10 20 (0,minY)
+    (chickens, _) = makeChickens (mkStdGen 3) 10 20 (0,minY)
     grid = (array
       ((minX,minY), (maxX,maxY))
       [if x==0 && y==maxY then (goal, Goal) else ((x, y), Open) | x <- [minX..maxX], y <- [minY..maxY]])
