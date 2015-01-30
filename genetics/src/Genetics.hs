@@ -13,7 +13,7 @@ data Movement = GoLeft | GoRight | GoUp | GoDown deriving (Enum, Bounded, Show)
 
 data Chicken = Chicken (Int, Int) [Movement] [Movement] deriving (Show)
 
-data World = World [Chicken] Grid
+data World = World [Chicken] Grid (Int, Int)
 
 instance Random Movement where
   random g = randomR (minBound, maxBound) g
@@ -28,6 +28,10 @@ makeChickens 0 _ _ = []
 makeChickens numChickens sizeDna pos =
     (chicken pos makeMovements) : makeChickens (numChickens-1) sizeDna pos
   where makeMovements = take sizeDna (drop (numChickens * sizeDna) (randoms (mkStdGen 13)))
+
+fitness :: World -> Chicken -> Float
+fitness (World _ _ goal@(x, y)) (Chicken position@(x', y') _ _) = -(sqrt $ fromIntegral radical)
+  where radical = (x - x')^2 + (y - y')^2
 
 nextPos :: Grid -> Movement -> (Int, Int) -> (Int, Int)
 nextPos grid GoLeft (x,y)
@@ -48,13 +52,13 @@ moveChicken grid (Chicken pos (m:ms) moved) = Chicken (nextPos grid m pos) ms (m
 moveChicken _ chicken = chicken
 
 move :: World -> World
-move (World chickens grid) = World (map (moveChicken grid) chickens) grid
+move (World chickens grid goal) = World (map (moveChicken grid) chickens) grid goal
 
 step :: ViewPort -> Float -> World -> World
 step _ _ world = move world
 
 worldToPicture :: World -> Picture
-worldToPicture (World chickens g) = pictures (worldPictures ++ chickenPictures)
+worldToPicture (World chickens g _) = pictures (worldPictures ++ chickenPictures)
   where
     chickenPictures = map chickenToPicture chickens
     chickenToPicture (Chicken (x, y) _ _) =
