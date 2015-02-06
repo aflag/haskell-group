@@ -42,9 +42,6 @@ fitness :: World -> Chicken -> Float
 fitness (World _ _ goal@(x, y)) (Chicken position@(x', y') _ _) = -(sqrt $ fromIntegral radical)
   where radical = (x - x')^2 + (y - y')^2
 
--- crossover :: Chicken -> Chicken -> [Chicken]
--- mutation
-
 nextPos :: Grid -> Movement -> (Int, Int) -> (Int, Int)
 nextPos grid GoLeft (x,y)
   | inRange (bounds grid) (x-1,y) = (x-1,y)
@@ -67,7 +64,14 @@ move :: World -> World
 move (World chickens grid goal) = World (map (moveChicken grid) chickens) grid goal
 
 step :: ViewPort -> Float -> World -> World
-step _ _ world = move world
+step _ _ world
+  | movementsFinished world = repopulateWorld world
+  | otherwise = move world
+
+movementsFinished :: World -> Bool
+movementsFinished (World chickens _ _) = all deadChicken chickens
+  where
+    deadChicken (Chicken _ todoList _) = null todoList
 
 worldToPicture :: World -> Picture
 worldToPicture (World chickens g _) = pictures (worldPictures ++ chickenPictures)
@@ -99,6 +103,20 @@ maxX = xSize `div` 2
 minX = -xSize `div` 2
 maxY = ySize `div` 2
 minY = -ySize `div` 2
+
+repopulateWorld :: World -> World
+repopulateWorld (World chickens grid goal) = World newChickens newGrid goal
+  where
+    newChickens = crossChickens chickens
+    newGrid = (array (bounds grid) [if x==0 && y==maxY then (goal, Goal) else ((x, y), Open) | x <- [minX..maxX], y <- [minY..maxY]])
+
+totalFitness :: World -> Float
+totalFitness world@(World chickens _ _) = sum (map (fitness world) chickens)
+
+crossChickens :: [Chicken] -> [Chicken]
+crossChickens = map restoreChicken
+  where
+    restoreChicken (Chicken _ _ movements) = chicken (0,minY) movements
 
 world = World chickens grid goal
   where
